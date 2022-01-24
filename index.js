@@ -1,15 +1,33 @@
-const express = require('express');
+/* const express = require('express');
+const path = require('path');
+const taskRoutes = require('./routes/task.routes'); */
+import express from 'express';
+import path from 'path';
+import taskRoutes from './routes/task.routes.js';
+
 const app = express();
-const port = "3001";
-const path = require("path");
-var Router = require('./routes/tareas.router');
-app.use(express.urlencoded());
+const PORT = '3001';
+const { pathname: publicFolder } = new URL(
+  'C:/Users/Kenzo/Desktop/RIVALDO-/MakeItReal/mir-express2/express-plano/public',
+  import.meta.url
+);
+//Body parser
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname,"public")))
-//both index.js and things.js should be in same directory
-app.use('/', Router);
+//Serving public files
+app.use(express.static(publicFolder));
 
+//Define EJS as engine
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-app.listen(port,() => {
-  console.log("Desde el puerto "+port)
-})
+//Routes
+app.use(taskRoutes);
+
+app.use('/', (req, res) => {
+  res.status(404).send('Page Not Found');
+});
+
+app.listen(PORT, () => {
+  console.log('Listening on Port ' + PORT);
+});
